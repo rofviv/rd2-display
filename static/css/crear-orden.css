@@ -1,0 +1,615 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+     margin: 0; /* Elimina cualquier margen predeterminado */
+    padding: 0; /* Elimina cualquier relleno predeterminado */
+    overflow: hidden; /* Evita el desplazamiento si algo excede el tamaño */
+}
+
+body {
+    background-image: url("../imagenes/fondo.png");
+    background-size: cover; /* Asegura que la imagen cubra todo el fondo */
+    background-repeat: no-repeat; /* Evita que la imagen se repita */
+    background-position: center center; /* Centra la imagen en ambas direcciones */
+    height: 100vh; /* Asegura que el fondo ocupe toda la altura de la ventana */
+    font-family: Arial, sans-serif;
+    color: #000;
+       opacity: 0;
+    transition: opacity 0.6s;
+}
+body.loaded {
+    opacity: 1;
+}
+/* =============================
+   TOGGLE BUTTON PARA IDIOMAS
+============================= */
+.language-toggle-container {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 15px;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(5px);
+    min-width: 140px;
+}
+
+.toggle-button-cover {
+    display: table-cell;
+    position: relative;
+    width: 74px;
+    height: 36px;
+    box-sizing: border-box;
+}
+
+.button-cover:before {
+    counter-increment: button-counter;
+    content: counter(button-counter);
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    color: #d7e3e3;
+    font-size: 12px;
+    line-height: 1;
+    padding: 5px;
+}
+
+.button {
+    position: relative;
+    width: 74px;
+    height: 36px;
+    overflow: hidden;
+}
+
+.checkbox {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 3;
+}
+
+.knobs {
+    z-index: 2;
+}
+
+.layer {
+    width: 100%;
+    background-color: #ebf7fc;
+    transition: 0.3s ease all;
+    z-index: 1;
+}
+
+.button.r,
+.button.r .layer {
+    border-radius: 100px;
+}
+
+/* Personalizado para idiomas */
+#button-3 .knobs:before {
+    content: "EN";
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 28px;
+    height: 28px;
+    color: #fff;
+    font-size: 10px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 28px;
+    background: linear-gradient(180deg, #3366FF, #1F3D99);
+    border-radius: 50%;
+    transition: 0.3s ease all, left 0.3s cubic-bezier(0.18, 0.89, 0.35, 1.15);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+#button-3 .checkbox:active + .knobs:before {
+    width: 46px;
+    border-radius: 100px;
+}
+
+#button-3 .checkbox:checked:active + .knobs:before {
+    margin-left: -26px;
+}
+
+#button-3 .checkbox:checked + .knobs:before {
+    content: "ES";
+    left: 42px;
+    background: linear-gradient(180deg, #FF6B6B, #C44569);
+}
+
+#button-3 .checkbox:checked ~ .layer {
+    background-color: #fcebeb;
+}
+
+/* Etiquetas de idioma */
+.language-labels {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 5px;
+}
+
+.lang-label {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    color: #666;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.lang-label.active {
+    color: #003BBB;
+    background: rgba(0, 59, 187, 0.1);
+    transform: translateY(-2px);
+}
+
+.es-label.active {
+    color: #C44569;
+    background: rgba(196, 69, 105, 0.1);
+}
+
+/* Efectos hover */
+.language-toggle-container:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* =============================
+   RESPONSIVE
+============================= */
+@media (max-width: 900px) {
+    .language-toggle-container {
+        top: 15px;
+        left: 15px;
+        padding: 12px;
+        min-width: 120px;
+    }
+    
+    .toggle-button-cover {
+        width: 65px;
+        height: 32px;
+    }
+    
+    .button {
+        width: 65px;
+        height: 32px;
+    }
+    
+    #button-3 .knobs:before {
+        width: 24px;
+        height: 24px;
+        line-height: 24px;
+        font-size: 9px;
+    }
+    
+    #button-3 .checkbox:checked + .knobs:before {
+        left: 37px;
+    }
+}
+
+@media (max-width: 600px) {
+    .language-toggle-container {
+        top: 10px;
+        left: 10px;
+        padding: 10px;
+        min-width: 110px;
+    }
+    
+    .toggle-button-cover {
+        width: 60px;
+        height: 30px;
+    }
+    
+    .button {
+        width: 60px;
+        height: 30px;
+    }
+    
+    #button-3 .knobs:before {
+        width: 22px;
+        height: 22px;
+        line-height: 22px;
+        font-size: 8px;
+    }
+    
+    #button-3 .checkbox:checked + .knobs:before {
+        left: 34px;
+    }
+    
+    .lang-label {
+        font-size: 0.8rem;
+    }
+}
+
+@media (min-width: 1200px) {
+    .language-toggle-container {
+        padding: 18px;
+        min-width: 160px;
+    }
+    
+    .toggle-button-cover {
+        width: 80px;
+        height: 40px;
+    }
+    
+    .button {
+        width: 80px;
+        height: 40px;
+    }
+    
+    #button-3 .knobs:before {
+        width: 32px;
+        height: 32px;
+        line-height: 32px;
+        font-size: 11px;
+    }
+    
+    #button-3 .checkbox:checked + .knobs:before {
+        left: 44px;
+    }
+}
+
+
+/* Contenedor principal de la aplicación */
+.app-container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+
+}
+   /* APLICAR ESTILO FLEX Y ALINEACIÓN AL FORMULARIO
+           PARA QUE LOS ELEMENTOS INTERNOS SE CENTREN Y APILEN CORRECTAMENTE */
+        .main-content-left form {
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Centra horizontalmente el contenido del form */
+            width: 100%; /* Ocupa el ancho completo de su padre (main-content-left) */
+        }
+
+/* Fondo de la ciudad (Posición absoluta para quedar detrás) */
+.city-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Ajusta la ruta de tu imagen de fondo */
+    background-image: url('../imagenes/fondo.png'); 
+    background-size: cover;
+    background-position: center;
+    opacity: 0.2; /* Ajusta la opacidad si es necesario */
+    z-index: 0;
+}
+.key-spacer {
+    flex: 1;
+    height: 100%;
+    max-height: 70px;
+    background: transparent;
+    border: none;
+}
+
+/* Logo (Posición absoluta para la esquina) */
+.logo-container {
+    position: absolute;
+    top: 40px;
+    left: 50px;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+}
+
+.logo-img {
+    height: 100px;
+    width: auto;
+}
+
+/* --- ESTRUCTURA FLEXBOX PRINCIPAL (75% / 25%) --- */
+
+/* Contenedor que divide la pantalla */
+.split-container {
+    position: relative;
+    z-index: 1; /* Por encima del fondo */
+    display: flex; /* Activa Flexbox layout */
+    width: 100%;
+    height: 100%; /* Ocupa toda la altura */
+
+}
+
+/* COLUMNA IZQUIERDA (75%) */
+.main-content-left {
+    width: 55%; /* Ocupa el 75% del ancho */
+    display: flex;
+    flex-direction: column; /* Elementos uno debajo del otro */
+    justify-content: center; /* Centrado verticalmente */
+    align-items: center; /* Centrado horizontalmente */
+    padding: 20px;
+}
+
+/* COLUMNA DERECHA (25%) */
+.robot-container-right {
+    width: 45%; /* Ocupa el 25% del ancho */
+    display: flex;
+    justify-content: center; /* Centrado horizontal de la imagen */
+    align-items: center; /* Centrado vertical de la imagen */
+    padding: 20px;
+}
+
+/* --- ESTILOS DE LOS ELEMENTOS INTERNOS --- */
+
+/* Título */
+.title {
+    width: 100%;
+    font-size: 48px;
+    font-weight: 700;
+    color: #000000;
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+/* Grupo de entrada */
+.input-group {
+    display: flex;
+    align-items: center;
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 20px 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+    /* Ancho fijo para coincidir con el teclado, centrado por flexbox padre */
+    width: 90%; 
+}
+
+.input-icon {
+    font-size: 28px;
+    color: #a0a0a0;
+    margin-right: 20px;
+}
+
+/* Estilo para el texto dentro de los inputs */
+.virtual-input {
+    width: 100%;
+    border: none;
+    outline: none;
+    background: transparent;
+    
+    /* TIPOGRAFÍA: Aseguramos que herede la fuente o usamos una específica */
+    font-family: Arial, sans-serif; /* O usa 'Inter', sans-serif; si cargaste esa fuente */
+    font-size: 28px; /* Tamaño grande y legible */
+    font-weight: 600; /* Un poco de negrita para que se vea sólido */
+    color: #333;
+    
+    /* Opcional: Centrar el texto si prefieres */
+    /* text-align: center; */ 
+}
+
+/* IMPORTANTE: Esto elimina las flechitas (spinners) feas de los inputs numéricos */
+.virtual-input::-webkit-outer-spin-button,
+.virtual-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Para Firefox */
+.virtual-input[type=number] {
+    -moz-appearance: textfield;
+}
+
+/* Ajuste del placeholder (el texto de fondo) para que no se vea tan oscuro */
+.virtual-input::placeholder {
+    color: #a0a0a0;
+    font-weight: 400;
+    font-size: 24px; /* Un poco más pequeño que el texto real */
+}
+#recipient-name {
+    border: none;
+    outline: none;
+    font-size: 28px;
+    color: #333;
+    width: 100%;
+    background: transparent;
+}
+/* alertas de error */
+.alert {
+    margin-top: 15px;
+    padding: 10px 10px;
+    border-radius: 10px;
+    font-size: 14px;
+    text-align: center;
+}
+
+.alert-error {
+    background-color: #ffe5e5;
+    color: #a10000;
+    border: 1px solid #ffb3b3;
+}
+
+.alert-error i {
+    margin-right: 6px;
+}
+/* =========================
+   TOAST FLOTANTE DE ERROR
+   ========================= */
+
+.toast {
+    position: fixed;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    padding: 14px 20px;
+    min-width: 280px;
+    max-width: 90%;
+
+    border-radius: 12px;
+    font-size: 14px;
+
+    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+
+    animation: toastFade 4s ease forwards;
+}
+
+.toast-error {
+    background: #ffe5e5;
+    color: #8a0000;
+  
+}
+
+.toast i {
+    font-size: 20px;
+}
+
+/* Animación: aparece, espera y se desvanece */
+@keyframes toastFade {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -20px);
+    }
+    10% {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+    80% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -20px);
+    }
+}
+
+/* Teclado Virtual (Con tus dimensiones fijas, pero sin posición absoluta) */
+.keyboard-container {
+    background-color: #ffffff;
+    border-radius: 27px; /* Tu radio de borde */
+    padding: 20px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 30px;
+    
+    /* Dimensiones fijas solicitadas */
+    width: 90%;
+    height: 400px;
+    /* NOTA: Hemos quitado position: absolute, top y left para que se centre automáticamente */
+}
+
+.keyboard-row {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex: 1; /* Para distribuir el espacio verticalmente */
+    align-items: center;
+}
+
+/* Teclas (Ajustadas para caber en el contenedor fijo) */
+.key {
+    flex: 1; /* Las teclas ocupan el espacio disponible */
+    height: 100%; /* Altura máxima de la fila */
+    max-height: 70px; /* Límite de altura para estética */
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+    background-color: #ffffff;
+    border: 2px solid #000000;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.key:active {
+    background-color: #f0f0f0;
+    transform: scale(0.98);
+}
+
+.key-backspace {
+    flex: 1; /* Un poco más ancha */
+    background-color: #e0e0e0;
+    border-color: #000000;
+}
+
+.key-space {
+    flex: 5; /* Barra espaciadora muy ancha */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  
+}
+
+/* Botón Continuar */
+.continue-button {
+    width: 90%; /* Mismo ancho que input y teclado */
+    padding: 25px;
+    font-size: 32px;
+    font-weight: 600;
+    color: #ffffff;
+   
+ 
+  
+    font-family: 'Inter', sans-serif; /* Aplica la fuente especificada */
+    font-weight: 500; /* Medium */
+   
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    color: #fff; /* Color del texto */
+    background: linear-gradient(180deg, #3366FF 0%, #1F3D99 140.15%); /* Fondo degradado */
+    border: none; /* Sin bordes */
+    border-radius: 8px; /* Bordes redondeados */
+    cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
+    transition: all 0.2s ease; /* Suaviza las transiciones */
+    /* NOTA: Hemos quitado position: absolute */
+}
+/* Efecto al hacer clic */
+.continue-button button:active {
+    transform: scale(0.95); /* Reduce ligeramente el tamaño al hacer clic */
+    animation-duration: 0ms; /* Animación instantánea */
+}
+
+/* Efecto al pasar el mouse */
+.continue-button:hover {
+    background: linear-gradient(180deg, #1F3D99 0%, #3366FF 140.15%); /* Invierte el degradado */
+}
+
+.continue-button:hover {
+    background-color: #234cb8;
+}
+
+/* Imagen del robot */
+.robot-img {
+    /* Hacemos que la imagen sea responsiva dentro de su columna del 25% */
+    
+   
+    width: 120%;
+    height: auto;
+    display: block;
+    filter: drop-shadow(0 20px 30px rgba(0,0,0,0.3));
+}

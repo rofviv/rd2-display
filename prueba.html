@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Control de Puerta</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #111;
+            color: #fff;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .panel {
+            background: #222;
+            padding: 30px;
+            border-radius: 12px;
+            width: 320px;
+            text-align: center;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: none;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .open {
+            background-color: #00c853;
+        }
+
+        .close {
+            background-color: #d50000;
+        }
+
+        button:active {
+            opacity: 0.85;
+        }
+    </style>
+</head>
+<body>
+
+<div class="panel">
+    <h2>Control de Puerta</h2>
+
+    <input
+        type="text"
+        id="ipInput"
+        placeholder="IP ESP32 (ej: 192.168.1.45)"
+    >
+
+    <button class="open" onclick="abrirPuerta()">ABRIR PUERTA</button>
+    <button class="close" onclick="cerrarPuerta()">CERRAR PUERTA</button>
+</div>
+
+<script>
+    function getBaseURL() {
+        const ip = document.getElementById("ipInput").value.trim();
+        if (!ip) {
+            alert("Ingrese la IP del ESP32");
+            return null;
+        }
+        return `http://${ip}/relay8`;
+    }
+
+    function abrirPuerta() {
+        const url = getBaseURL();
+        if (!url) return;
+
+        fetch(url)
+            .then(() => console.log("Puerta abierta / toggle ejecutado"))
+            .catch(err => {
+                console.error(err);
+                alert("No se pudo conectar al ESP32");
+            });
+    }
+
+    function cerrarPuerta() {
+        const url = getBaseURL();
+        if (!url) return;
+
+        fetch(url)
+            .then(() => console.log("Puerta cerrada / toggle ejecutado"))
+            .catch(err => {
+                console.error(err);
+                alert("No se pudo conectar al ESP32");
+            });
+    }
+</script>
+
+</body>
+</html>

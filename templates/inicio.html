@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="{{ session.get('language', 'en') }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/inicio.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/toggle-button.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700&display=swap" rel="stylesheet">
+    <title>{{ _('Home') }}</title>
+    <style>
+        /* Tus estilos existentes... */
+        #robot-ip-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: #222;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s;
+        }
+
+        #robot-ip-btn:hover {
+            transform: scale(1.1);
+        }
+
+        #robot-ip-btn i {
+            font-size: 1.5rem;
+        }
+
+        #robot-ip-modal {
+            position: fixed;
+            bottom: 80px;
+            left: 20px;
+            z-index: 1001;
+            display: none;
+        }
+
+        #robot-ip-modal.show {
+            display: block;
+        }
+
+        .modal-box {
+            background: #222;
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            width: 280px;
+            text-align: center;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            border: 1px solid #444;
+        }
+
+        .modal-box h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #fff;
+        }
+
+        #robotIpInput {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #555;
+            border-radius: 6px;
+            background: #333;
+            color: white;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+
+        #robotIpInput:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .modal-box button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            width: 100%;
+            transition: background 0.2s;
+        }
+
+        .modal-box button:hover {
+            background: #0056b3;
+        }
+
+        .modal-box button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .ip-status {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #aaa;
+        }
+
+        .ip-status.connected {
+            color: #28a745;
+        }
+
+        .ip-status.disconnected {
+            color: #dc3545;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            z-index: 999;
+            display: none;
+        }
+
+        #modal-overlay.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Toggle Button para cambiar idioma - SOLO en esta página -->
+    <div class="language-toggle-container">
+        <div class="toggle-button-cover">
+            <div id="button-3" class="button r">
+                <input class="checkbox" type="checkbox" id="languageCheckbox"
+                       {% if session.get('language', 'en') == 'es' %}checked{% endif %}>
+                <div class="knobs"></div>
+                <div class="layer"></div>
+            </div>
+        </div>
+        <div class="language-labels">
+            <span class="lang-label en-label {% if session.get('language', 'en') == 'en' %}active{% endif %}">
+                🇺🇸 EN
+            </span>
+            <span class="lang-label es-label {% if session.get('language', 'en') == 'es' %}active{% endif %}">
+                🇧🇴 ES
+            </span>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="section">
+            <div class="btn-text">
+                <div class="text-content">
+                    <h1>{{ _('Create order') }}</h1>
+                    <p>{{ _('Assign order to RD2') }}</p>
+                    <button onclick="window.location.href='{{ url_for('paso2_telefono') }}'">
+                        {{ _('Start ->') }}
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="section">
+            <div class="soy-container">
+                <p class="text-soy">{{ _("I'm RD2") }}</p>
+            </div>
+            <img class="robot" src="{{ url_for('static', filename='imagenes/robot.png') }}" alt="Robot">
+        </div>
+    </div>
+    
+    <!-- Botón de configuración IP -->
+    <div id="robot-ip-btn" title="{{ _('Configure Robot IP') }}">
+        <i class="fas fa-network-wired"></i>
+    </div>
+
+    <!-- Overlay para cerrar el modal haciendo clic fuera -->
+    <div id="modal-overlay"></div>
+
+    <!-- Modal -->
+    <div id="robot-ip-modal">
+        <div class="modal-box">
+            <h3>{{ _('Robot IP Configuration') }}</h3>
+            <input type="text" id="robotIpInput" placeholder="192.168.1.50">
+            <div id="ipStatus" class="ip-status"></div>
+            <button onclick="guardarRobotIP()" id="saveIpBtn">{{ _('Save') }}</button>
+        </div>
+    </div>
+
+    <script>
+        // boton de ip del robot
+        const ipBtn = document.getElementById("robot-ip-btn");
+        const modal = document.getElementById("robot-ip-modal");
+        const overlay = document.getElementById("modal-overlay");
+        const robotIpInput = document.getElementById("robotIpInput");
+        const ipStatus = document.getElementById("ipStatus");
+        const saveIpBtn = document.getElementById("saveIpBtn");
+        let isModalOpen = false;
+
+        // Función para abrir/cerrar el modal
+        function toggleModal() {
+            isModalOpen = !isModalOpen;
+            
+            if (isModalOpen) {
+                modal.classList.add("show");
+                overlay.classList.add("show");
+                // Cargar la IP actual si existe
+                cargarIPActual();
+                // Enfocar el input
+                setTimeout(() => robotIpInput.focus(), 100);
+            } else {
+                modal.classList.remove("show");
+                overlay.classList.remove("show");
+                // Limpiar estado
+                ipStatus.textContent = "";
+                ipStatus.className = "ip-status";
+            }
+        }
+
+        // Asignar evento al botón de IP
+        ipBtn.onclick = toggleModal;
+
+        // Cerrar modal haciendo clic en el overlay
+        overlay.onclick = toggleModal;
+
+        // Prevenir que el clic en el modal lo cierre
+        modal.onclick = function(e) {
+            e.stopPropagation();
+        };
+
+        // Función para validar IP
+        function isValidIP(ip) {
+            const ipPattern = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+            return ipPattern.test(ip);
+        }
+
+        // Cargar IP actual desde el servidor
+        function cargarIPActual() {
+            fetch("/robot/get_ip")
+                .then(response => {
+                    if (!response.ok) throw new Error("Error en la respuesta");
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.ip) {
+                        robotIpInput.value = data.ip;
+                        ipStatus.textContent = `{{ _('Current IP') }}: ${data.ip}`;
+                        ipStatus.className = "ip-status connected";
+                        
+                        // Probar conexión con el robot
+                        testRobotConnection(data.ip);
+                    } else {
+                        ipStatus.textContent = "{{ _('No IP configured') }}";
+                        ipStatus.className = "ip-status disconnected";
+                    }
+                })
+                .catch(error => {
+                    console.error("Error al cargar IP:", error);
+                    ipStatus.textContent = "{{ _('Error loading IP') }}";
+                    ipStatus.className = "ip-status disconnected";
+                });
+        }
+
+        // Probar conexión con el robot
+        function testRobotConnection(ip) {
+            if (!ip || !isValidIP(ip)) return;
+            
+            // Intenta una conexión rápida para verificar
+            fetch(`http://${ip}/`, { mode: 'no-cors', signal: AbortSignal.timeout(1000) })
+                .then(() => {
+                    ipStatus.textContent += " - {{ _('Connected') }}";
+                })
+                .catch(() => {
+                    ipStatus.textContent += " - {{ _('Not reachable') }}";
+                });
+        }
+
+        // Guardar IP en el servidor
+        function guardarRobotIP() {
+            const ip = robotIpInput.value.trim();
+            
+            // Validación de IP
+            if (!ip) {
+                alert("{{ _('Please enter an IP address') }}");
+                robotIpInput.focus();
+                return;
+            }
+            
+            if (!isValidIP(ip)) {
+                alert("{{ _('Please enter a valid IP address (e.g., 192.168.1.50)') }}");
+                robotIpInput.select();
+                return;
+            }
+
+            // Deshabilitar botón mientras se guarda
+            const originalText = saveIpBtn.textContent;
+            saveIpBtn.textContent = "{{ _('Saving...') }}";
+            saveIpBtn.disabled = true;
+            ipStatus.textContent = "{{ _('Saving...') }}";
+
+            fetch("/robot/set_ip", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ ip: ip })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { 
+                        throw new Error(err.error || '{{ _('Error saving IP') }}'); 
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Mostrar mensaje de éxito
+                ipStatus.textContent = `{{ _('IP saved successfully') }}: ${data.ip}`;
+                ipStatus.className = "ip-status connected";
+                
+                // Cerrar automáticamente después de 1 segundo
+                setTimeout(() => {
+                    toggleModal();
+                }, 1000);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                ipStatus.textContent = `{{ _('Error') }}: ${error.message}`;
+                ipStatus.className = "ip-status disconnected";
+            })
+            .finally(() => {
+                // Restaurar botón
+                saveIpBtn.textContent = originalText;
+                saveIpBtn.disabled = false;
+            });
+        }
+
+        // Cerrar modal con tecla ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && isModalOpen) {
+                toggleModal();
+            }
+            
+            // Guardar con Enter cuando el input está enfocado
+            if (e.key === 'Enter' && isModalOpen && document.activeElement === robotIpInput) {
+                guardarRobotIP();
+            }
+        });
+
+        let redirectTimeout;
+
+        window.onload = () => {
+            document.body.classList.add("loaded");
+
+            redirectTimeout = setTimeout(() => {
+                window.location.href = "{{ url_for('index') }}";
+            }, 20000);
+
+            const checkbox = document.getElementById('languageCheckbox');
+
+            checkbox.addEventListener('change', function () {
+                clearTimeout(redirectTimeout);
+                const newLang = this.checked ? 'es' : 'en';
+                window.location.href = `/set_language/${newLang}`;
+            });
+        };
+    </script>
+</body>
+</html>

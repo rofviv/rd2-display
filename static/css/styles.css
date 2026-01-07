@@ -1,0 +1,106 @@
+/*
+  --- CSS Original con Mejoras Leves ---
+*/
+
+* {
+    margin: 0;
+    padding: 0;
+    /* Incluye padding y borde en el ancho/alto total */
+    box-sizing: border-box; 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    color: white;
+    /* Asegura que el scroll funcione si el contenido es más largo que la ventana.
+      Se elimina el overflow-x: hidden si planeas tener contenido que pueda desbordar, 
+      pero lo mantengo si es intencional para evitar scroll horizontal. 
+    */
+    overflow-x: hidden; 
+    min-height: 100vh;
+    /* Asegura que el contenido del body esté sobre el overlay y el video 
+      (aunque ya se logra con z-index en .content).
+    */
+    position: relative; 
+    z-index: 0; 
+}
+
+/* Contenedor del video: Fijo, ocupando toda la ventana.
+*/
+.video-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -2;
+    overflow: hidden;
+}
+
+/* Video de fondo: Cubre el contenedor completamente (la clave de la responsividad del video).
+*/
+#bg-video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    /* Centra el video */
+    transform: translate(-50%, -50%); 
+    /* Asegura que el video cubra el área sin estirarse */
+    object-fit: cover; 
+}
+
+/* Capa de superposición (Oscuro): Fijo, ocupando toda la ventana.
+*/
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: -1;
+}
+
+/* Contenido principal: Debe tener un z-index positivo para aparecer sobre el overlay/video.
+*/
+.content {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+/* ... (El resto de tus estilos como header, h1, p, btn, features, etc., son ya responsivos) ... */
+
+/* --- Media Query existente (Ya Responsivo) ---
+*/
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2.5rem;
+    }
+    
+    p {
+        font-size: 1rem;
+    }
+    
+    .features {
+        /* Pasa a una sola columna */
+        flex-direction: column; 
+    }
+    
+    .video-controls {
+        bottom: 10px;
+        right: 10px;
+    }
+    
+    /* Asegura que los elementos .feature también se vean bien en móvil */
+    .feature {
+        min-width: unset; 
+    }
+}
